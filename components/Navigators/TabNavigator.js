@@ -7,8 +7,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 import HomeStackScreen from "./HomeScreenStack";
 import FeedStackScreen from "../Navigators/FeedScreenStack";
-import LeaderboardScreen from "../Leaderboard/fetchHandleLeaderboard";
-// import LeaderboardScreen from "../Leaderboard/Leaderboard";
+import LeaderboardScreen from "../Leaderboard/Ranklist";
 import ProfileStackScreen from "./ProfileScreenStack";
 
 export default TabNavigator = () => {
