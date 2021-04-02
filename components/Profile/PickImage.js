@@ -12,7 +12,7 @@ require("firebase/firestore");
 require("firebase/firebase-storage");
 export default function PickImage({ navigation }) {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED);
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -85,7 +85,7 @@ export default function PickImage({ navigation }) {
   };
   
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
         <View style={{ marginHorizontal: 20 }}>
           <TouchableOpacity
             style={{
@@ -117,15 +117,15 @@ export default function PickImage({ navigation }) {
                 flex: 3,
                 alignItems: "center",
                 justifyContent: "center",
-                borderWidth: 1,
-                borderColor: "black",
+                borderWidth: 0.5,
+                borderColor: "grey",
                 height: 50,
                 borderRadius: 12,
                 backgroundColor: "#F1F7FF",
               }}
               onPress={() => pickImage()}
             >
-              <Text style={{ fontFamily: "gilroy-medium", fontSize: 16 }}>
+              <Text style={{ fontFamily: "gilroy-medium", fontSize: 16, opacity: 0.4 }}>
                 Choose a file
               </Text>
             </TouchableOpacity>

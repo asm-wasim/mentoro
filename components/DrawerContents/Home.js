@@ -97,7 +97,7 @@ export default class Home extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.avatarContainer}>
-              <Icon name="send-outline" color="black" size={26} />
+              <Icon name="send-outline" color="black" size={26} onPress={()=> this.props.navigation.navigate('Messages')} />
             </View>
           </View>
           <Text style={styles.textDash}>Hello, whonayem01</Text>

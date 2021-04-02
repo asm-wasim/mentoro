@@ -9,6 +9,8 @@ import TopicScreen from '../Articles/Topic';
 import TopicContentScreen from '../Articles/TopicContent'
 import SearchScreen from '../Search';
 import StalkProfileScreen from '../Profile/StalkProfile'
+import MessagesScreen from '..//Messages/MessagesScreen'
+import ChatScreen from '..//Messages/ChatScreen'
 
 export default HomeScreenStack = () => {
   return (
@@ -16,6 +18,16 @@ export default HomeScreenStack = () => {
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="Messages"
+        component={MessagesScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="Chat"
+        component={ChatScreen}
         options={{ headerShown: false }}
       />
       <HomeStack.Screen

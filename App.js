@@ -9,14 +9,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBfWvQpx0Pzmeaqd_8wztfoUCrUdI5JvZ8",
   authDomain: "mentoro-dminions06-tle.firebaseapp.com",
+  databaseURL: "https://mentoro-dminions06-tle-default-rtdb.firebaseio.com",
   projectId: "mentoro-dminions06-tle",
   storageBucket: "mentoro-dminions06-tle.appspot.com",
   messagingSenderId: "682970428924",
   appId: "1:682970428924:web:d37754c38039547494ee79",
-  measurementId: "G-WC9NC7FDB3",
+  measurementId: "G-WC9NC7FDB3"
 };
 
 const Stack = createStackNavigator();
@@ -32,6 +34,7 @@ import SetNewPasswordScreen from "./components/auth/Login/SetNewPassword";
 import RegisterScreen from "./components/auth/Register/Register";
 import emailVarifyScreen from "./components/auth/Register/emailVarify";
 import DrawerNavigatorScreen from "./components/Navigators/DrawerNavigator";
+import FeedScreen from "./components/Navigators/FeedScreenStack";
 
 import TopicScreen from './components/Articles/Topic'
 
@@ -136,9 +139,9 @@ export default class App extends Component {
       
     });
   }
-  // componentWillUnmount() {
-  //   this._isMounted = false;
-  // }
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
  
   render() {
     const { loggedIn, loaded, fontsLoaded , userfind } = this.state;
@@ -238,6 +241,11 @@ export default class App extends Component {
               <Stack.Screen
                 name="DrawerNavigator"
                 component={DrawerNavigatorScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Feed"
+                component={FeedScreen}
                 options={{ headerShown: false }}
               />
               <Stack.Screen

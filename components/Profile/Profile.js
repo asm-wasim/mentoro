@@ -42,7 +42,7 @@ export class Profile extends Component {
       email: null,
       CFHandle: null,
       CCHandle: null,
-      firebaseData: false,
+      firebaseData: true,
        profilePicture: "https://www.shutterstock.com/image-vector/vector-man-profile-icon-380655355",
       userData: [],
     };

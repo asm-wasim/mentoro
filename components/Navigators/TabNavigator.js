@@ -6,14 +6,14 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 const Tab = createMaterialBottomTabNavigator();
 
 import HomeStackScreen from "./HomeScreenStack";
-import FeedScreen from "../DrawerContents/Feed";
+import FeedStackScreen from "../Navigators/FeedScreenStack";
 import LeaderboardScreen from "../Leaderboard/fetchHandleLeaderboard";
 // import LeaderboardScreen from "../Leaderboard/Leaderboard";
 import ProfileStackScreen from "./ProfileScreenStack";
 
 export default TabNavigator = () => {
   return (
-    <Tab.Navigator initialRouteName="Profile" activeColor="#fff">
+    <Tab.Navigator initialRouteName="Home" activeColor="#fff">
       <Tab.Screen
         name="Home"
         component={HomeStackScreen}
@@ -27,7 +27,7 @@ export default TabNavigator = () => {
       />
       <Tab.Screen
         name="Feed"
-        component={FeedScreen}
+        component={FeedStackScreen}
         options={{
           tabBarLabel: "Feed",
           tabBarColor: "#41444B",

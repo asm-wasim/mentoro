@@ -59,7 +59,7 @@ export class Register extends Component {
             console.log(e);
           });
       })
-      .then((result) => {
+      .then(() => {
         firebase
           .firestore()
           .collection("users")
@@ -74,7 +74,6 @@ export class Register extends Component {
             CCHandle,
             year,
           });
-        console.log(result);
       })
       .catch((error) => {
         console.log(error);
