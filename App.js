@@ -202,7 +202,7 @@ export default class App extends Component {
       {
         return (
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="DrawerNavigator">
+            <Stack.Navigator initialRouteName="Topic">
               <Stack.Screen
                 name="Onboarding"
                 component={Onboarding}
