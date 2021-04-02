@@ -17,7 +17,7 @@ import moment from "moment";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import FeedPostScreen from "./FeedPost";
 
-posts = [
+let posts = [
   {
     id: "1",
     name: "Abdullah Al Nayem",

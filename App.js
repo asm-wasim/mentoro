@@ -37,6 +37,7 @@ import DrawerNavigatorScreen from "./components/Navigators/DrawerNavigator";
 import FeedScreen from "./components/Navigators/FeedScreenStack";
 
 import TopicScreen from './components/Articles/Topic'
+import TopicContentScreen from './components/Articles/TopicContent'
 
 import CaroselScreen from "./Carosel";
 
@@ -202,7 +203,7 @@ export default class App extends Component {
       {
         return (
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="Topic">
+            <Stack.Navigator initialRouteName="DrawerNavigator">
               <Stack.Screen
                 name="Onboarding"
                 component={Onboarding}
@@ -256,6 +257,11 @@ export default class App extends Component {
               <Stack.Screen
                 name="Topic"
                 component={TopicScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="TopicContent"
+                component={TopicContentScreen}
                 options={{ headerShown: false }}
               />
                 <Stack.Screen

@@ -125,9 +125,9 @@ export default class Home extends Component {
               showsHorizontalScrollIndicator={false}
               horizontal
             >
-              <Cards bg="red" idx={0} />
-              <Cards bg="red" idx={1} />
-              <Cards bg="red" idx={2} />
+              <Cards bg="red" idx={0} onPress={()=> this.props.navigation.navigate('Topic')} />
+              <Cards bg="red" idx={1} onPress={()=> this.props.navigation.navigate('Topic')} />
+              <Cards bg="red" idx={2} onPress={()=> this.props.navigation.navigate('Topic')} />
             </ScrollView>
 
             <Text
@@ -146,9 +146,9 @@ export default class Home extends Component {
               showsHorizontalScrollIndicator={false}
               horizontal
             >
-              <Cards bg="red" idx={3} />
-              <Cards bg="red" idx={4} />
-              <Cards bg="red" idx={5} />
+              <Cards bg="red" idx={3} onPress={()=> this.props.navigation.navigate('Topic')} />
+              <Cards bg="red" idx={4} onPress={()=> this.props.navigation.navigate('Topic')} />
+              <Cards bg="red" idx={5} onPress={()=> this.props.navigation.navigate('Topic')} />
             </ScrollView>
           </View>
         </ScrollView>
