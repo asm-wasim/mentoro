@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Button, TextInput, Text, TouchableOpacity, Alert } from "react-native";
+import { View, TextInput, Text, TouchableOpacity, Alert, StatusBar } from "react-native";
 import firebase from "firebase";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -30,7 +30,6 @@ export default class EditProfile extends Component {
         if (snapshot.exists) {
           this.setState({
             name: snapshot.data().name,
-            password: snapshot.data().password,
             username: snapshot.data().username,
             CFHandle: snapshot.data().CFHandle,
             CCHandle: snapshot.data().CCHandle,
@@ -57,27 +56,15 @@ export default class EditProfile extends Component {
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "white" }}>
-        {/* <TextInput
-          placeholder='name'
-          value={this.state.name}
-          onChangeText={(name) => this.setState({ name })}
+        <StatusBar
+          animated={true}
+          backgroundColor="transparent"
+          barStyle="dark-content"
         />
-        <TextInput
-        placeholder='username'
-          value={this.state.username}
-          onChangeText={(username) => this.setState({ username })}
-        />
-        <TextInput
-        placeholder='CF Handle'
-          value={this.state.CFHandle}
-          onChangeText={(CFHandle) => this.setState({ CFHandle })}
-        />
-        <TextInput
-        placeholder='CC Handle'
-          value={this.state.CCHandle}
-          onChangeText={(CCHandle) => this.setState({ CCHandle })}
-        />
-        <Button onPress={() => {this.onUpdate(), this.props.navigation.goBack()}} title="Update" /> */}
+        <View style={{ flexDirection: 'row', width: 360, marginHorizontal: 20, backgroundColor: "white",}}>
+           <Ionicons name="chevron-back" size={24} style={{alignSelf: 'flex-start'}} onPress={() => this.props.navigation.goBack()} />
+           <Text style={{alignSelf: 'center', fontFamily: "gilroy-bold", fontSize: 18, marginLeft: 110, marginBottom: 20}}>Edit Profile</Text>
+        </View>
 
         <Text style={{ marginHorizontal: 35, fontFamily: "gilroy-bold" }}>
           Full Name
@@ -314,7 +301,7 @@ export default class EditProfile extends Component {
               fontFamily: "gilroy-bold",
             }}
           >
-            Register
+            Update
           </Text>
         </TouchableOpacity>
       </View>

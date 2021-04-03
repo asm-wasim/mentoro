@@ -1,5 +1,8 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, StatusBar } from 'react-native';
+
+import { Ionicons } from 'react-native-vector-icons'
+
 import {
   Container,
   Card,
@@ -20,7 +23,7 @@ const Messages = [
     userImg: require('../../assets/Person/nayem.jpg'),
     messageTime: '4 mins ago',
     messageText:
-      'Hey there, this is my test for a post of my social app in React Native.',
+      'Bhai, free asoin ni?',
   },
   {
     id: '2',
@@ -28,7 +31,7 @@ const Messages = [
     userImg: require('../../assets/Person/hridoy.jpg'),
     messageTime: '2 hours ago',
     messageText:
-      'Hey there, this is my test for a post of my social app in React Native.',
+      'Bagbari Mess o seat ase ni bhai?',
   },
   {
     id: '3',
@@ -36,7 +39,7 @@ const Messages = [
     userImg: require('../../assets/Person/wasim.jpg'),
     messageTime: '1 hours ago',
     messageText:
-      'Hey there, this is my test for a post of my social app in React Native.',
+      'Kalke bikale free takba ni bhai?',
   },
   {
     id: '4',
@@ -44,7 +47,7 @@ const Messages = [
     userImg: require('../../assets/Person/mujammal.jpg'),
     messageTime: '1 day ago',
     messageText:
-      'Hey there, this is my test for a post of my social app in React Native.',
+      'Bhai, ektu dorkar asil',
   },
   {
     id: '5',
@@ -52,7 +55,7 @@ const Messages = [
     userImg: require('../../assets/Person/kamona.jpg'),
     messageTime: '2 days ago',
     messageText:
-      'Hey there, this is my test for a post of my social app in React Native.',
+      'Ou equation ta jana ase ni afnr?',
   },
   {
     id: '6',
@@ -60,13 +63,18 @@ const Messages = [
     userImg: require('../../assets/Person/shakib.jpg'),
     messageTime: '3 days ago',
     messageText:
-      'Hey there, this is my test for a post of my social app in React Native.',
+      'Heaven o khela ase bhai, aiba ni?',
   },
 ];
 
 const MessagesScreen = ({navigation}) => {
     return (
       <Container>
+        <StatusBar animated={true} backgroundColor="transparent" barStyle="dark-content" />
+        <View style={{ flexDirection: 'row', width: 360, marginHorizontal: 20, backgroundColor: "white",}}>
+           <Ionicons name="chevron-back" size={24} style={{alignSelf: 'flex-start'}} onPress={() => navigation.goBack()} />
+           <Text style={{alignSelf: 'center', fontFamily: "gilroy-bold", fontSize: 18, marginLeft: 110}}>Messages</Text>
+        </View>
         <FlatList 
           data={Messages}
           keyExtractor={item=>item.id}

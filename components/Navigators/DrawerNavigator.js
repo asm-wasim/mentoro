@@ -6,7 +6,7 @@ import ProfileStackScreen from "./ProfileScreenStack";
 import FavoritesScreenStack from "./FavoritesScreenStack";
 import BadgesScreen from "../DrawerContents/Badges";
 import FeedScreenStack from "./FeedScreenStack";
-import ContestReminderScreen from '../DrawerContents/ContestReminder/ContestReminder';
+import ContestReminderScreen from "../DrawerContents/ContestReminder/ContestReminder";
 import NotificationScreen from "../DrawerContents/Notification";
 import AboutUsScreen from "../DrawerContents/AboutUs";
 
@@ -16,8 +16,9 @@ const Drawer = createDrawerNavigator();
 
 export default DrawerNavigator = () => {
   return (
-    <Drawer.Navigator drawerContent={props => <DrawerContentScreen {...props} /> } >
-    {/* <Drawer.Navigator initialRouteName="Home" > */}
+    <Drawer.Navigator
+      drawerContent={(props) => <DrawerContentScreen {...props} />}
+    >
       <Drawer.Screen name="Home" component={TabNavigatorScreen} />
       <Drawer.Screen name="Profile" component={ProfileStackScreen} />
       <Drawer.Screen

@@ -1,4 +1,4 @@
-import React, { Component, Profiler, useState, useEffect, useCallback } from "react";
+import React, { Component, Profiler, useState, useEffect } from "react";
 import {
   Image,
   TextInput,
@@ -8,12 +8,9 @@ import {
   StyleSheet,
   StatusBar,
   Button,
-  ActivityIndicator
 } from "react-native";
 import Constants from "expo-constants";
 import Svg, { G, Circle, Rect } from "react-native-svg";
-
-import firebase from "firebase";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -25,77 +22,51 @@ import Donut from "./Donut";
 import EditProfileScreen from "./EditProfile";
 import LoaderScreen from "../../Loader";
 
-const getSubmissions = (submissions, verdict) =>
-  submissions.filter((submission) => submission.verdict === verdict);
+const data = [
+  {
+    percentage: 85,
+    color: "skyblue",
+    max: 100,
+  },
+];
 
-const isSameProblem = (p1, p2) =>
-  p1.name === p2.name && Math.abs(p1.contestId - p2.contestId) <= 1;
-  
-const removeDuplicateProblems = (submissions) => {
-  submissions.sort((a, b) =>
-    a.problem.name === b.problem.name
-      ? a.problem.contestId - b.problem.contestId
-      : a.problem.name < b.problem.name
-        ? -1
-        : 1
-  );
-  return submissions.filter(
-    ({ problem }, index) =>
-      !index || !isSameProblem(submissions[index - 1].problem, problem)
-  );
-};
+import firebase from "firebase";
+// import LottieView from "lottie-react-native";
 
-const getProblems = (submissions) => {
-  const ac = getSubmissions(submissions, "OK");
-  return removeDuplicateProblems(ac);
-};
+export class Profile extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "Abdullah Al Nayem",
+      username: "whonayem01",
+      email: null,
+      CFHandle: null,
+      CCHandle: null,
+      firebaseData: true,
+       profilePicture: "https://www.shutterstock.com/image-vector/vector-man-profile-icon-380655355",
+      userData: [],
+    };
+  }
 
-export default function Profile({ navigation }) {
-  const [profilePicture, setProfilePicture] = useState("https://meetanentrepreneur.lu/wp-content/uploads/2019/08/profil-linkedin.jpg");
-  const [name, setName] = useState("");
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [CFHandle, setCFHandle] = useState("");
-  const [cfDataLoaded, setCfDataLoaded] = useState(false);
-  const [firebaseLoaded1, setfirebaseLoaded1] = useState(false);
-  const [firebaseLoaded2, setfirebaseLoaded2] = useState(false);
-  const [submissions, setSubmissions] = useState([]);
-  const [totalCodeforcesSolved, setTotalCodeforcesSolved] = useState(0);
-
-  //Codeforces Section
-  const get_codeforces_data = useCallback(()=>{
-    let link = "https://codeforces.com/api/user.status?handle={handle}"; //Recive all submissions
-    link = link.replace("{handle}", CFHandle);
-    fetch(link)
-      .then((res) => res.json())
-      .then((res) => res.result)
-      .then((res) => {
-        setSubmissions(res);
-        setCfDataLoaded(true);
-        const ac = getProblems(res)
-        setTotalCodeforcesSolved( ac.length );
-      });
-  })
-
-  // Firebase Section
-  const current_user_data = useCallback(() => {
+  async componentDidMount() {
     firebase
       .firestore()
       .collection("users")
       .doc(firebase.auth().currentUser.uid)
       .get()
       .then((snapshot) => {
-        //console.log(snapshot);
-        setName(snapshot.data().name);
-        setUserName(snapshot.data().username);
-        setEmail(snapshot.data().email);
-        setCFHandle(snapshot.data().CFHandle);
-        setfirebaseLoaded1(true);
+        if (snapshot.exists) {
+          this.setState({
+            name: snapshot.data().name,
+            username: snapshot.data().username,
+            email: snapshot.data().email,
+            CFHandle: snapshot.data().CFHandle,
+            CCHandle: snapshot.data().CCHandle,
+            firebaseData: true,
+            // profilePicture: snapshot.data().downloadURL,
+          });
+        }
       });
-      console.log("One")
-    })
-    
-    const get_user_profile_data = () => {
       firebase
       .firestore()
       .collection("posts")
@@ -103,46 +74,49 @@ export default function Profile({ navigation }) {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
-          setProfilePicture(snapshot.data().downloadURL)
+          this.setState({
+            firebaseData: true,
+            profilePicture: snapshot.data().downloadURL,
+          });
         }
-        setfirebaseLoaded2(true);
       });
-      console.log("Two")
   }
 
-  const onLogout = () => {
-    console.log("Logged out!");
-    firebase.auth().signOut();
-    navigation.navigate("Splash");
-  };
+  render() {
+    const {
+      name,
+      username,
+      email,
+      CFHandle,
+      CCHandle,
+      firebaseData,
+      userData,
+    } = this.state;
 
-  if (!firebaseLoaded1) {
-    current_user_data();
-    return (
-      <View style={[styles.activitycontainer, styles.horizontal]}>
-        <ActivityIndicator size="large" color="green" />
-      </View>
-    );
-  }
-  if (firebaseLoaded1 && !firebaseLoaded2) {
-    get_user_profile_data();
-    return (
-      <View style={[styles.activitycontainer, styles.horizontal]}>
-        <ActivityIndicator size="large" color="green" />
-      </View>
-    );
-  }
+    onLogout = () => {
+      console.log("Logged out!");
+      firebase.auth().signOut();
+      this.props.navigation.navigate("Splash");
+    };
 
-  if(firebaseLoaded1 && firebaseLoaded2 && !cfDataLoaded){
-    get_codeforces_data();
-    return (
-      <View style={[styles.activitycontainer, styles.horizontal]}>
-        <ActivityIndicator size="large" color="green" />
-      </View>
-    );
-  }
+    if (!firebaseData) {
+      return (
+        // <LoaderScreen />
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <Text>Loading....</Text>
+        </View>
+        // <LottieView source={require('../../loader1.json')} autoPlay loop />
+      );
+    }
 
-  if (firebaseLoaded1 && firebaseLoaded2 && cfDataLoaded) {
+    // return(
+    //   <View>
+    //     <Text>Nayem</Text>
+    //   </View>
+    // )
+
     return (
       <View
         style={{
@@ -155,14 +129,13 @@ export default function Profile({ navigation }) {
           backgroundColor="transparent"
           barStyle="dark-content"
         />
-
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.titleBar}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
               <Ionicons name="chevron-back-outline" size={24} color="#52575D" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigation.navigate("EditProfile")}
+              onPress={() => this.props.navigation.navigate("EditProfile")}
             >
               <Feather name="edit" size={24} color="#52575D" />
             </TouchableOpacity>
@@ -171,7 +144,8 @@ export default function Profile({ navigation }) {
             <View style={styles.profileImage}>
               <Image
                 style={styles.image}
-                source={{ uri: profilePicture }}
+                //source={require("../../assets/Person/nayem.jpg")}
+                 source={{ uri: this.state.profilePicture }}
                 resizeMode="cover"
               />
             </View>
@@ -181,7 +155,7 @@ export default function Profile({ navigation }) {
             <View style={styles.active}></View>
             <View style={styles.add}>
               <TouchableOpacity
-                onPress={() => navigation.navigate("PickImage")}
+                onPress={() => this.props.navigation.navigate("PickImage")}
               >
                 <Ionicons
                   name="ios-add"
@@ -222,7 +196,7 @@ export default function Profile({ navigation }) {
             </View>
 
             <View style={styles.statsBox}>
-              <Text style={[styles.text, { fontSize: 24 }]}>{totalCodeforcesSolved}</Text>
+              <Text style={[styles.text, { fontSize: 24 }]}>1258</Text>
               <Text style={[styles.ext, styles.subText]}>total</Text>
             </View>
           </View>
@@ -231,8 +205,11 @@ export default function Profile({ navigation }) {
               <Text style={[styles.text, { fontSize: 24 }]}>Your Points</Text>
               <Text style={[styles.ext, styles.subText]}>
                 +20 since last week
-            </Text>
+              </Text>
             </View>
+
+            {/* {data.map((p, i) => {
+              return ( */}
             <Donut
               key={1}
               percentage={85}
@@ -240,6 +217,8 @@ export default function Profile({ navigation }) {
               delay={500 + 100 * 1}
               max={100}
             />
+            {/* );
+            })} */}
 
             <View
               style={[
@@ -257,7 +236,7 @@ export default function Profile({ navigation }) {
                 <Ionicons name="ellipse" color="skyblue" />
                 <Text style={[styles.text, { fontWeight: "200" }]}>
                   Codeforces
-              </Text>
+                </Text>
               </View>
               <View
                 style={{
@@ -269,18 +248,19 @@ export default function Profile({ navigation }) {
                 <Ionicons name="ellipse" color="darkmagenta" />
                 <Text style={[styles.text, { fontWeight: "200" }]}>
                   Codechef
-              </Text>
+                </Text>
               </View>
             </View>
           </View>
           <Button title="Sign Out" onPress={() => onLogout()} />
-
+             
         </ScrollView>
       </View>
     );
   }
 }
 
+export default Profile;
 
 const styles = StyleSheet.create({
   container: {
@@ -382,13 +362,4 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textAlign: "center",
   },
-  activitycontainer: {
-    flex: 1,
-    justifyContent: "center"
-  },
-  horizontal: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10
-  }
 });

@@ -38,6 +38,7 @@ import FeedScreen from "./components/Navigators/FeedScreenStack";
 
 import TopicScreen from './components/Articles/Topic'
 import TopicContentScreen from './components/Articles/TopicContent'
+import BadgesScreen from './components/DrawerContents/Badges'
 
 import CaroselScreen from "./Carosel";
 
@@ -204,6 +205,11 @@ export default class App extends Component {
         return (
           <NavigationContainer>
             <Stack.Navigator initialRouteName="DrawerNavigator">
+              <Stack.Screen
+                name="Badges"
+                component={BadgesScreen}
+                options={{ headerShown: false }}
+              />
               <Stack.Screen
                 name="Onboarding"
                 component={Onboarding}

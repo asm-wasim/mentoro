@@ -17,6 +17,7 @@ import firebase from "firebase";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 export default function DrawerContent(props) {
   return (
@@ -53,17 +54,17 @@ export default function DrawerContent(props) {
           <Drawer.Section style={styles.bottomDrawerSection}>
             <Drawer.Item
               icon={({ color, size }) => (
-                <Icon name="home-outline" color={color} size={size} />
+                <Icon name="heart-outline" color={color} size={size} />
               )}
-              label="Home"
-              onPress={() => {props.navigation.navigate('Home')}}
+              label="Favorites"
+              onPress={() => {props.navigation.navigate('Favorites')}}
             />
             <Drawer.Item
               icon={({ color, size }) => (
                 <Feather name="award" color={color} size={size} />
               )}
               label="Badges"
-              onPress={() => {}}
+              onPress={() => {props.navigation.navigate('Badges')}}
             />
             <Drawer.Item
               icon={({ color, size }) => (
@@ -79,9 +80,23 @@ export default function DrawerContent(props) {
               label="Blog"
               onPress={() => {props.navigation.navigate('Feed')}}
             />
+          </Drawer.Section>
+          <Drawer.Section style={styles.bottomDrawerSection2}>
             <Drawer.Item
               icon={({ color, size }) => (
-                <Feather name="info" color={color} size={size} />
+                <Feather name="star" color={color} size={size} />
+              )}
+              label="Rate Us"
+            />
+            <Drawer.Item
+              icon={({ color, size }) => (
+                <FontAwesome name="share" color={color} size={size} />
+              )}
+              label="Share with a friend"
+            />
+            <Drawer.Item
+              icon={({ color, size }) => (
+                <Ionicons name="people-outline" color={color} size={size} />
               )}
               label="About Us"
               onPress={() => {props.navigation.navigate('AboutUs')}}
@@ -138,9 +153,14 @@ const styles = StyleSheet.create({
   },
   bottomDrawerSection: {
     marginTop: 15,
+    borderTopColor: "#f4f4f4",
+    borderTopWidth: 2,
+  },
+  bottomDrawerSection2: {
+    marginTop: -5,
     marginBottom: 15,
     borderTopColor: "#f4f4f4",
-    borderTopWidth: 1,
+    borderTopWidth: 2,
   },
   preference: {
     flexDirection: "row",

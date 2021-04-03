@@ -60,7 +60,7 @@ export default function RankList() {
 
     for (let i = 0; i < junior_cf_handle.length; i++) {
       if (i > 0) junior_cf_link = junior_cf_link.concat(";");
-      junior_cf_link = junior_cf_link.concat(overall_cf_handle[i]);
+      junior_cf_link = junior_cf_link.concat(junior_cf_handle[i]);
     }
     console.log(junior_cf_link, "Link Created Junior");
     setLinkCreated(true)
@@ -73,10 +73,14 @@ export default function RankList() {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {
-          overall_cf_handle.push(documentSnapshot.data().cfHandle);
+          overall_cf_handle.push(documentSnapshot.data().CFHandle);
           let Year = documentSnapshot.data().year;
-          if (Year.localeCompare(One) == 0 || Year.localeCompare(Two) == 0) { junior_cf_handle.push(documentSnapshot.data().cfHandle) }
-          else { senior_cf_handle.push(documentSnapshot.data().cfHandle) }
+          let a = Year.localeCompare(One) == 0;
+          let b = Year.localeCompare(Two) == 0; 
+          console.log(Year,a,b, documentSnapshot.data().CFHandle );
+          if (a) { junior_cf_handle.push(documentSnapshot.data().CFHandle) }
+          else if (b) { junior_cf_handle.push(documentSnapshot.data().CFHandle) }
+          else { senior_cf_handle.push(documentSnapshot.data().CFHandle) }
         });
         setfirebaseLoaded(true);
       });
