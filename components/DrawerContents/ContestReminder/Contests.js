@@ -1,9 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 
-import colors from "../../../colors";
-import tempData from "../../../tempData";
-
 export default class Contests extends React.Component {
   state = {
     showListVisible: false,

@@ -25,28 +25,28 @@ const DATA = [
     location: 'Sylhet, Bangladesh',
     date: 'April 23rd, 1997',
     poster:
-      require('./assets/Person/nayem.jpg'),
+      require('../assets/Person/nayem.jpg'),
   },
   {
     title: 'Jungle Party',
     location: 'Unknown',
     date: 'Sept 3rd, 2020',
     poster:
-    require('./assets/Person/wasim.jpg'),
+    require('../assets/Person/wasim.jpg'),
   },
   {
     title: '4th Of July',
     location: 'New York, USA',
     date: 'Oct 11th, 2020',
     poster:
-    require('./assets/Person/hridoy.jpg'),
+    require('../assets/Person/hridoy.jpg'),
   },
   {
     title: 'Summer festival',
     location: 'Bucharest, Romania',
     date: 'Aug 17th, 2020',
     poster:
-    require('./assets/Person/shakib.jpg'),
+    require('../assets/Person/shakib.jpg'),
   },
   {
     title: 'BBQ with friends',

@@ -23,7 +23,7 @@ const firebaseConfig = {
 
 const Stack = createStackNavigator();
 
-import LoaderScreen from "./Loader";
+import LoaderScreen from "./statics/Loader";
 import HomeDeckScreen from "./src/screens/Home.js";
 import Onboarding from "./components/auth/Onboarding/Onboarding";
 import SplashScreen from "./components/auth/Splash";
@@ -40,7 +40,7 @@ import TopicScreen from './components/Articles/Topic'
 import TopicContentScreen from './components/Articles/TopicContent'
 import BadgesScreen from './components/DrawerContents/Badges'
 
-import CaroselScreen from "./Carosel";
+import CaroselScreen from "./statics/Carosel";
 
 import PickImageScreen from "./components/Profile/PickImage";
 

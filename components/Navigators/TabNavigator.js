@@ -12,7 +12,7 @@ import ProfileStackScreen from "./ProfileScreenStack";
 
 export default TabNavigator = () => {
   return (
-    <Tab.Navigator initialRouteName="Home" activeColor="#fff">
+    <Tab.Navigator initialRouteName="Profile" activeColor="#fff">
       <Tab.Screen
         name="Home"
         component={HomeStackScreen}

@@ -3,8 +3,8 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, TextInp
 
 import { AntDesign } from '@expo/vector-icons';
 
-import colors from '../../../colors';
-import tempData from '../../../tempData';
+import colors from '../../../statics/colors';
+import tempData from '../../../statics/tempData';
 
 
 export default class AddContest extends React.Component {

@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 
-import slides from "../../../slides";
+import slides from "../../../statics/slides";
 import NextButton from "./NextButton";
 import OnboardItems from "./OnboardItems";
 import Paginator from "./Paginator";

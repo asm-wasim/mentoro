@@ -3,8 +3,8 @@ import { StyleSheet, Text, TouchableOpacity, View, FlatList, Modal } from 'react
 
 //import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-import colors from '../../../colors';
-import tempData from '../../../tempData';
+import colors from '../../../statics/colors';
+import tempData from '../../../statics/tempData';
 import { AntDesign } from '@expo/vector-icons';
 import Contests from './Contests';
 import AddContest from './AddContest';
