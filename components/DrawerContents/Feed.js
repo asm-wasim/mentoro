@@ -112,23 +112,24 @@ const getMonthName = monthIndex => {
 };
 
 const convertTime = (date) => {
-   let time;
-   let AMorPM = "AM";
-   if(date.getHours() > 12) AMorPM = "PM";
-   let hour = (date.getHours()%12).toString();
-   let minute = date.getMinutes().toString();
-   let second = date.getSeconds().toString();
-   if(hour.length === 1) hour = "0"+ hour;
-   if(minute.length === 1) minute = "0"+ minute;
-   if(second.length === 1) second = "0"+ second;
-   time = hour;
-   time += ":"
-   time += minute;
-   time += ":"
-   time += second;
-   time += " ";
-   time += AMorPM;
-   return time;
+  let time;
+  let AMorPM = "AM";
+  if (date.getHours() > 12) AMorPM = "PM";
+  let hour = (date.getHours() % 12).toString();
+  let minute = date.getMinutes().toString();
+  let second = date.getSeconds().toString();
+  if (hour.length === 1) hour = "0" + hour;
+  if(hour.localeCompare("00") === 0) hour = "12";
+  if (minute.length === 1) minute = "0" + minute;
+  if (second.length === 1) second = "0" + second;
+  time = hour;
+  time += ":"
+  time += minute;
+  time += ":"
+  time += second;
+  time += " ";
+  time += AMorPM;
+  return time;
 }
 
 
@@ -146,7 +147,8 @@ export default function Feed() {
   const [ProfilePhotoLoaded, setProfilePhotoLoaded] = useState(false);
   const [allPostLoaded, setAllPostLoaded] = useState(false);
   const [Called, setCalled] = useState(false);
-
+  const[currentUserId , setcurrentUserId] = useState("") ;
+  const [networkError, setNetworkError] = useState(false);
 
   const get_current_user_name = useCallback(() => {
     firebase
@@ -157,13 +159,14 @@ export default function Feed() {
       .then((snapshot) => {
         if (snapshot.exists) {
           setCurrentUserName(snapshot.data().name);
+          setcurrentUserId(firebase.auth().currentUser.uid);
           setUserNameLoaded(true);
         }
-        else{
+        else {
           setUserNameLoaded(true);
-          // console.log("Not Exist user name");
-        } 
-      });
+        }
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });;
   })
 
   const get_profile_photo = useCallback(() => {
@@ -177,11 +180,12 @@ export default function Feed() {
           setCurrentUserProfilePhoto(snapshot.data().downloadURL);
           setProfilePhotoLoaded(true);
         }
-        else{ 
-          setProfilePhotoLoaded(true); 
+        else {
+          setProfilePhotoLoaded(true);
           // console.log("Not Exist profile photo");
         }
-      });
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });;
   })
 
   const get_all_user_posts = useCallback(() => {
@@ -194,15 +198,15 @@ export default function Feed() {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {
-          //console.log(documentSnapshot.data());
+          console.log(documentSnapshot.id);
           allUserPost.push(documentSnapshot.data());
           allUserPost[postNo].postNo = postNo;
           postNo++;
         });
         //console.log(allUserPost)
         setAllPostLoaded(true);
-      });
-
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });;
   })
 
   const post_that_content = useCallback(() => {
@@ -214,13 +218,15 @@ export default function Feed() {
           currentUserName,
           currentUserProfilePhoto,
           currentUserPostContent,
+          currentUserId,
           creation: firebase.firestore.FieldValue.serverTimestamp(),
-        });
+        })
+        .catch((err) => { console.log(err); setNetworkError(true) });;
     }
   })
 
-  const show_post_alert = useCallback(()=>{
-    setTimeout(function(){
+  const show_post_alert = useCallback(() => {
+    setTimeout(function () {
       Alert.alert("Posted Successfully!")
       allUserPost.length = 0;
       postNo = 0;
@@ -228,8 +234,8 @@ export default function Feed() {
     }, 1000);
   })
 
-  const action_for_post = useCallback((author)=>{
-    if(author === currentUserName){
+  const action_for_post = useCallback((author) => {
+    if (author === currentUserName) {
       console.log("Asce")
       //Do something for deleting and updaing post 
     }
@@ -241,7 +247,7 @@ export default function Feed() {
 
   const renderPost = (post) => {
     // console.log(post);
-    let date = new Date(post.creation.seconds*1000);
+    let date = new Date(post.creation.seconds * 1000);
     let time = convertTime(date);
 
     return (
@@ -264,7 +270,7 @@ export default function Feed() {
               </Text>
             </View>
 
-            <Feather name="more-horizontal" size={24} color="#73788B" onPress={()=> action_for_post(post.currentUserName) } />
+            <Feather name="more-horizontal" size={24} color="#73788B" onPress={() => action_for_post(post.currentUserName)} />
           </View>
 
           <Text style={styles.posts}>{post.currentUserPostContent}</Text>
@@ -288,6 +294,16 @@ export default function Feed() {
     );
   };
 
+  if (networkError) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+        <Feather name='alert-octagon' size={50} color='red' />
+        <Text style={{ fontFamily: 'gilroy-bold', fontSize: 24, marginTop: 10 }} >Oops</Text>
+        <Text style={{ fontFamily: 'gilroy-bold' }} >Network Error  :(</Text>
+      </View>
+    )
+  }
+
   if (!userNameLoaded) {
     get_current_user_name();
     return (
@@ -296,7 +312,7 @@ export default function Feed() {
       </View>
     );
   }
-  
+
   if (userNameLoaded && !ProfilePhotoLoaded) {
     get_profile_photo();
     return (
@@ -368,23 +384,7 @@ export default function Feed() {
                 value={currentUserPostContent}
               />
             </View>
-            <View style={{ height: 45, marginHorizontal: 40, }}>
-              <View style={{ flex: 1, flexDirection: "row", }}>
-                <TouchableOpacity style={{ flex: 3, alignItems: "center", justifyContent: "center", borderWidth: 0.5, borderColor: "grey", height: 50, borderRadius: 12, backgroundColor: "F1F7FF", width: 265 }}>
-                  <Text style={{ fontFamily: "gilroy-medium", fontSize: 16, opacity: 0.4 }}>Choose a file</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={{ flex: 1, alignItems: "center", justifyContent: "center", height: 50, borderRadius: 12, marginLeft: 5, backgroundColor: "#2397D7", width: 70 }} >
-                  <Text style={{ fontFamily: "gilroy-medium", fontSize: 16, color: "white", }}>Save</Text>
-                </TouchableOpacity>
-              </View>
-              {image !== null ? (
-
-                <View style={{ marginHorizontal: 10, marginTop: 10, flexDirection: "row", }}>
-                  <Feather name="check-circle" size={16} color="green" />
-                  <Text style={{ marginLeft: 10, fontFamily: "gilroy-medium", fontSize: 15, }}>File selected!</Text>
-                </View>
-              ) : null}
-            </View>
+           
           </View>
         </Modal>
 

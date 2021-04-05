@@ -1,4 +1,4 @@
-import React, { Component, Profiler, useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Image,
   TextInput,
@@ -12,23 +12,14 @@ import {
   ActivityIndicator,
   LogBox
 } from "react-native";
-import Constants from "expo-constants";
-import Svg, { G, Circle, Rect } from "react-native-svg";
 
 import firebase from "firebase";
-import moment from "moment";
-
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { Ionicons, MaterialIcons, Feather } from "@expo/vector-icons";
+import { Ionicons, Icon, Feather } from "@expo/vector-icons";
 
 // import BadgesData from '../../statics/BadgesData'
 import Donut from "./Donut";
-import EditProfileScreen from "./EditProfile";
-import LoaderScreen from "../../statics/Loader";
-import { call } from "react-native-reanimated";
 
 let posts = [
   {
@@ -72,31 +63,49 @@ let posts = [
 let BadgesData = [
   {
     id: "1",
-    title: "Nayem",
-    description: 'Earned on Jan 1, 2021',
+    title: "1500+",
+    description: 'Solved 1500 problems!',
     icon: require('../../assets/Person/nayem.jpg'),
+    status: "false",
   },
   {
     id: "2",
-    title: "Hridoy",
-    description: 'Earned on Feb 25, 2020',
+    title: "1000+",
+    description: 'Solved 1000 problems!',
     icon: require("../../assets/Person/hridoy.jpg"),
+    status: "false",
   },
   {
     id: "3",
-    title: "Wasim",
-    description: 'Earned on Dec 23, 2021',
+    title: "800+",
+    description: 'Solved 800 problems!',
     icon: require("../../assets/Person/wasim.jpg"),
+    status: "false",
   },
   {
     id: "4",
-    title: "Muja",
-    description: 'Earned on Sep 08, 2019',
+    title: "500+",
+    description: 'Solved 500 problems!',
     icon: require("../../assets/Person/mujammal.jpg"),
+    status: "false",
+  },
+  {
+    id: "5",
+    title: "250+",
+    description: 'Solved 250 problems!',
+    icon: require("../../assets/Person/mujammal.jpg"),
+    status: "false",
+  },
+  {
+    id: "6",
+    title: "100+",
+    description: 'Solved 100 problems!',
+    icon: require("../../assets/Person/mujammal.jpg"),
+    status: "false",
   },
 ];
 
-let counter = 0;
+let finalBadges = [];
 
 const getSubmissions = (submissions, verdict) =>
   submissions.filter((submission) => submission.verdict === verdict);
@@ -122,6 +131,7 @@ const getProblems = (submissions) => {
   const ac = getSubmissions(submissions, "OK");
   return removeDuplicateProblems(ac);
 };
+
 const Calculate_Point = (Point) => {
   Point = Point.toFixed(2);
   Point = Point * (1.0 / 18.0);
@@ -148,27 +158,29 @@ const getMonthName = monthIndex => {
 };
 
 const convertTime = (date) => {
-   let time;
-   let AMorPM = "AM";
-   if(date.getHours() > 12) AMorPM = "PM";
-   let hour = (date.getHours()%12).toString();
-   let minute = date.getMinutes().toString();
-   let second = date.getSeconds().toString();
-   if(hour.length === 1) hour = "0"+ hour;
-   if(minute.length === 1) minute = "0"+ minute;
-   if(second.length === 1) second = "0"+ second;
-   time = hour;
-   time += ":"
-   time += minute;
-   time += ":"
-   time += second;
-   time += " ";
-   time += AMorPM;
-   return time;
+  let time;
+  let AMorPM = "AM";
+  if (date.getHours() > 12) AMorPM = "PM";
+  let hour = (date.getHours() % 12).toString();
+  let minute = date.getMinutes().toString();
+  let second = date.getSeconds().toString();
+  if (hour.length === 1) hour = "0" + hour;
+  if (hour.localeCompare("00") === 0) hour = "12";
+  if (minute.length === 1) minute = "0" + minute;
+  if (second.length === 1) second = "0" + second;
+  time = hour;
+  time += ":"
+  time += minute;
+  time += ":"
+  time += second;
+  time += " ";
+  time += AMorPM;
+  return time;
 }
 
 
 export default function Profile({ navigation }) {
+
   const [profilePicture, setProfilePicture] = useState("https://meetanentrepreneur.lu/wp-content/uploads/2019/08/profil-linkedin.jpg");
   const [name, setName] = useState("");
   const [userName, setUserName] = useState("");
@@ -197,6 +209,11 @@ export default function Profile({ navigation }) {
   const [ownerPostLoaded, setOwnerPostLoaded] = useState(false);
   const [ownerPostCalled, setOwnerPostCalled] = useState(false);
 
+  const [badgesLoaded, setBadgesLoaded] = useState(false);
+  const [badgesCalled, setBadgesCalled] = useState(false);
+
+  const [networkError, setNetworkError] = useState(false);
+
   //Error Solved
   useEffect(() => {
     LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
@@ -204,8 +221,7 @@ export default function Profile({ navigation }) {
 
   //Codeforces Section
   const get_codeforces_data = useCallback(() => {
-    // console.log("CF 1");
-    let link = "https://codeforces.com/api/user.status?handle={handle}"; //Recive all submissions
+    let link = "https://codeforces.com/api/user.status?handle={handle}";
     link = link.replace("{handle}", CFHandle);
     fetch(link)
       .then((res) => res.json())
@@ -213,23 +229,23 @@ export default function Profile({ navigation }) {
       .then((res) => {
         setSubmissions(res);
         setCfUserStatusLoaded(true);
-        // const ac = getProblems(res)
-        // setTotalCodeforcesSolved(ac.length);
-      });
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
   })
 
   const get_cf_user_details = useCallback(() => {
-    // console.log("CF 2");
-    let link2 = "https://codeforces.com/api/user.info?handles={handle}";
-    link2 = link2.replace("{handle}", CFHandle);
-    fetch(link2)
+    let link = "https://codeforces.com/api/user.info?handles={handle}";
+    link = link.replace("{handle}", CFHandle);
+    fetch(link)
       .then((res) => res.json())
       .then((res) => res.result)
       .then((res) => {
         setCfPoint(res[0].rating);
         setCfPointLoaded(true);
       })
+      .catch((err) => { console.log(err); setNetworkError(true) });
   })
+
   // Firebase Section
   const current_user_data = useCallback(() => {
     firebase
@@ -244,8 +260,8 @@ export default function Profile({ navigation }) {
         setEmail(snapshot.data().email);
         setCFHandle(snapshot.data().CFHandle);
         setfirebaseLoaded1(true);
-      });
-    // console.log("One")
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
   })
 
   const get_user_profile_data = () => {
@@ -259,8 +275,8 @@ export default function Profile({ navigation }) {
           setProfilePicture(snapshot.data().downloadURL)
         }
         setfirebaseLoaded2(true);
-      });
-    // console.log("Two")
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
   }
 
   const make_recent_activity_list = useCallback(() => {
@@ -285,7 +301,7 @@ export default function Profile({ navigation }) {
         let tempPost = [];
         let postNo = 0;
         querySnapshot.forEach((documentSnapshot) => {
-          if(documentSnapshot.data().currentUserName === name){
+          if (documentSnapshot.data().currentUserName === name) {
             tempPost.push(documentSnapshot.data());
             tempPost[postNo].postNo = postNo;
             postNo++;
@@ -293,14 +309,39 @@ export default function Profile({ navigation }) {
         });
         setOwnerPostLoaded(true);
         setOwnerPost(tempPost);
-      });
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
   })
 
-  // const onLogout = () => {
-  //   console.log("Logged out!");
-  //   firebase.auth().signOut();
-  //   navigation.navigate("Splash");
-  // };
+  const make_badges_list = useCallback(()=>{
+    const ac = getProblems(submissions);
+    if(ac.length >= 100)  { BadgesData[5].status = "true"; }
+    if(ac.length >= 250)  { BadgesData[4].status = "true"; }
+    if(ac.length >= 500)  { BadgesData[3].status = "true"; }
+    if(ac.length >= 800)  { BadgesData[2].status = "true"; }
+    if(ac.length >= 1000) { BadgesData[1].status = "true"; }
+    if(ac.length >= 1500) { BadgesData[0].status = "true"; }
+    
+    let i = 0;
+    for( i = 0; i < 6; i++){
+      if(BadgesData[i].status === "true" && finalBadges.length < 4){
+        finalBadges.push(BadgesData[i]);
+        console.log(i);
+      }
+    }
+    if(i === 6) setBadgesLoaded(true);
+  })
+
+  if (networkError) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }} >
+        <Feather name='alert-octagon' size={50} color='red' />
+        <Text style={{ fontFamily: 'gilroy-bold', fontSize: 24, marginTop: 10 }} >Oops</Text>
+        <Text style={{ fontFamily: 'gilroy-bold' }} >Network Error  :(</Text>
+      </View>
+    )
+  }
+
 
   if (!firebaseLoaded1) {
     if (!firebaseCalled1) {
@@ -358,8 +399,19 @@ export default function Profile({ navigation }) {
       </View>
     );
   }
+  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded && !badgesLoaded) {
+    if (!badgesCalled) {
+      setBadgesCalled(true);
+      make_badges_list();
+    }
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
 
-  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded && !ownerPostLoaded) {
+  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded && badgesLoaded &&  !ownerPostLoaded) {
     if (!ownerPostCalled) {
       setOwnerPostCalled(true);
       get_owner_post();
@@ -371,18 +423,20 @@ export default function Profile({ navigation }) {
     }
   }
 
-  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded) {
+  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded && badgesLoaded && ownerPostCalled) {
     const renderPost = (post) => {
-      return (
-        <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', marginLeft: 15 }} >
-          <Image source={post.icon} style={{ height: 45, width: 45, borderRadius: 100 }} />
-          <Text style={{ fontFamily: 'gilroy-bold', fontSize: 14 }} >{post.title}</Text>
-        </View>
-      );
+      if (post.status === "true") {
+        return (
+          <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', marginLeft: 15 }} >
+            <Image source={post.icon} style={{ height: 45, width: 45, borderRadius: 100 }} />
+            <Text style={{ fontFamily: 'gilroy-bold', fontSize: 14 }} >{post.title}</Text>
+          </View>
+        );
+      }
     };
 
     const renderBlog = (post) => {
-      let date = new Date(post.creation.seconds*1000);
+      let date = new Date(post.creation.seconds * 1000);
       let time = convertTime(date);
       return (
         <View style={styles.feedItem}>
@@ -399,7 +453,7 @@ export default function Profile({ navigation }) {
               <View>
                 <Text style={styles.name}>{post.currentUserName}</Text>
                 <Text style={styles.timestamp}>
-                {getMonthName(date.getMonth())} {date.getDate()}, {date.getFullYear()}  {time}
+                  {getMonthName(date.getMonth())} {date.getDate()}, {date.getFullYear()}  {time}
                 </Text>
               </View>
 
@@ -482,11 +536,6 @@ export default function Profile({ navigation }) {
             <Text style={{ fontFamily: 'gilroy-medium', color: 'white', fontSize: 16, marginTop: 5, marginBottom: 150 }}>{userName}</Text>
           </View>
 
-          {/* <View style={styles.infoContainer}>
-            <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>{name}</Text>
-            <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>{email}</Text>
-          </View> */}
-
           <View style={styles.pointsBox}>
             <View style={{ flex: 1, marginTop: 15 }}>
               <Text style={[styles.text, { fontSize: 24 }]}>Your Points</Text>
@@ -511,9 +560,9 @@ export default function Profile({ navigation }) {
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 100, marginHorizontal: 20, marginTop: 10, backgroundColor: 'white', marginBottom: 20, borderRadius: 30 }} >
             <FlatList
               horizontal={true}
-              data={BadgesData}
+              data={finalBadges}
               renderItem={({ item }) => renderPost(item)}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={false}
             />
             <TouchableOpacity style={{ backgroundColor: 'orange', marginRight: 10, height: 40, width: 90, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.navigate('Badges')} >
@@ -543,52 +592,12 @@ export default function Profile({ navigation }) {
 
 
           <View style={{ marginLeft: 40 }} >
-
             <FlatList
               data={recentActivity}
               renderItem={({ item }) => renderRecentActivity(item)}
               keyExtractor={(item) => item.id.toString()}
               showsVerticalScrollIndicator={true}
             />
-
-            {/* <View style={styles.recentItem} >
-              <Ionicons name='heart' size={24} color='purple' style={styles.iconActivityIndicator} />
-              <View style={{ width: 250, marginBottom: 10 }} >
-                <Text style={styles.activityText} >
-                  Started following whonayem01
-                </Text>
-              </View>
-            </View>
-
-            
-
-            <View style={styles.recentItem} >
-              <Ionicons name='close-circle-outline' size={24} color='red' style={styles.iconActivityIndicator} />
-              <View style={{ width: 250, marginBottom: 10 }} >
-                <Text style={styles.activityText} >
-                  Wrong submission on CF-1130-D "Alice and Bob playing games"
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.recentItem} >
-              <Ionicons name='checkmark-done-circle-outline' size={24} color='green' style={styles.iconActivityIndicator} />
-              <View style={{ width: 250, marginBottom: 10 }} >
-                <Text style={styles.activityText} >
-                  Solved CF 1287-D "Vasya and her plane"
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.recentItem} >
-              <Ionicons name='checkmark-done-circle-outline' size={24} color='green' style={styles.iconActivityIndicator} />
-              <View style={{ width: 250, marginBottom: 10 }} >
-                <Text style={styles.activityText} >
-                  Solved CF 786-E "Tree and Queries"
-                </Text>
-              </View>
-            </View> */}
-
           </View>
 
           <Text style={{ fontFamily: 'gilroy-bold', fontSize: 18, alignSelf: 'center', marginBottom: 10, marginTop: 20 }} >Classmates</Text>
@@ -615,7 +624,7 @@ export default function Profile({ navigation }) {
             style={styles.feed}
             data={ownerPost}
             renderItem={({ item }) => renderBlog(item)}
-            keyExtractor={(item) => item.postNo}
+            keyExtractor={(item) => item.postNo.toString()}
             showsVerticalScrollIndicator={true}
           />
         </ScrollView>

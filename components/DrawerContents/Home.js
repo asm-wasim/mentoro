@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -8,13 +8,15 @@ import {
   StatusBar,
   TouchableOpacity,
   ImageBackground,
+  ActivityIndicator
 } from "react-native";
-import Icon from "@expo/vector-icons/Ionicons";
+import { Icon, Feather} from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 import Deck from "../Deck";
 import Cards from "../Cards";
 
 import firebase from 'firebase'
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const DATA = [
   {
@@ -37,52 +39,114 @@ const DATA = [
   },
 ];
 
-export default class Home extends Component {
+const convertTime = (date) => {
+  let time;
+  let AMorPM = "AM";
+  if(date.getHours() > 12) AMorPM = "PM";
+  let hour = (date.getHours()%12).toString();
+  let minute = date.getMinutes().toString();
+  let second = date.getSeconds().toString();
+  if(hour.length === 1) hour = "0"+ hour;
+  if(minute.length === 1) minute = "0"+ minute;
+  if(second.length === 1) second = "0"+ second;
+  time = hour;
+  time += ":"
+  time += minute;
+  time += " ";
+  time += AMorPM;
+  return time;
+}
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      userName: "", 
-      userNameLoaded: false 
-    };
-  }
 
-  async componentDidMount(){
+export default function Home({ navigation }) {
+  const [userName, setUserName] = useState("Mentorian")
+  const [userNameLoaded, setUserNameLoaded] = useState(false);
+  const [userNameCalled, setUserNameCalled] = useState(false);
+
+  const [contestList, setContestList] = useState([]);
+  const [contestListLoaded, setContestListLoaded] = useState(false);
+  const [contestListcalled, setContestListCalled] = useState(false);
+
+  const [futureContestList, setFutureContestList] = useState([]);
+  const [futureContestListLoaded, setFutureContestListLoaded] = useState(false);
+  const [futureContestListCalled, setFutureContestListCalled] = useState(false);
+
+  const [networkError, setNetworkError] = useState(false);
+
+  const get_user_details = useCallback(() => {
     firebase
-    .firestore()
-    .collection("users")
-    .doc(firebase.auth().currentUser.uid)
-    .get()
-    .then((snapshot) => {
-      if (snapshot.exists) {
-        this.setState({userName: snapshot.data().username , userNameLoaded: true});
-      }
-    });
-  }
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setUserName(snapshot.data().username);
+          setUserNameLoaded(true);
+        }
+        else{
+          setUserNameLoaded(true);
+        }
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
+  })
 
-  renderCard(item) {
+  const get_contest_list = useCallback(() => {
+    let link = "https://codeforces.com/api/contest.list";
+    fetch(link)
+      .then((res) => res.json())
+      .then((res) => res.result)
+      .then((res) => {
+        setContestList(res);
+        setContestListLoaded(true)
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
+  })
+
+  const get_future_contest_link = useCallback(()=>{
+    let i = 0;
+    let tempArr = [];
+    let ok = false;
+    for(i = 0; i < contestList.length; i++){
+        if(contestList[i].phase.localeCompare("BEFORE") === 0 ){
+          tempArr.push(contestList[i]);
+        }
+        else{
+          ok = true;
+          break;
+        }
+    }
+    if(ok || i == contestList.length){
+        setFutureContestList(tempArr);
+        setFutureContestListLoaded(true);
+    }
+  })
+
+  const renderCard = (item) => {
+    let date = new Date(item.startTimeSeconds*1000);
+    let time = convertTime(date);
     return (
       <View key={item.id} style={styles.cardContainer}>
         <View style={styles.card}>
           <View>
-            <Text style={styles.title}>{item.time}</Text>
-            <Icon
+            <Text style={styles.title}>Starts at {time}</Text>
+            <Ionicons
               name="ios-remove"
               size={40}
               color="red"
-              style={{ marginTop: 25 }}
+              style={{ marginTop: 1 }}
             />
-            <Text style={styles.number}>{item.number}</Text>
+            <Text style={styles.number}>{item.name}</Text>
           </View>
           <View style={{ marginLeft: 150, marginTop: 18 }}>
-            <Text style={styles.textCovid}>{item.title}</Text>
+            <Text style={styles.textCovid}>Codeforces</Text>
           </View>
         </View>
       </View>
     );
   }
 
-  renderNoMoreCards() {
+  const renderNoMoreCards = () => {
     return (
       <View style={{ alignItems: "center", justifyContent: "center" }}>
         <Text style={styles.noCard}>This is all for now.</Text>
@@ -90,7 +154,50 @@ export default class Home extends Component {
     );
   }
 
-  render() {
+  if(networkError){
+    return(
+      <View style={{flex: 1, alignItems : 'center', justifyContent: 'center'}} >
+        <Feather name='alert-octagon' size={50} color='red' />
+        <Text style={{fontFamily: 'gilroy-bold', fontSize: 24, marginTop: 10}} >Oops</Text>
+        <Text style={{fontFamily: 'gilroy-bold'}} >Network Error  :(</Text>
+      </View>
+    )
+  }
+
+  if (!userNameLoaded) {
+    if (!userNameCalled) {
+      setUserNameCalled(true);
+      get_user_details();
+    }
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+  if (userNameLoaded && !contestListLoaded) {
+    if (!contestListcalled) {
+      setContestListCalled(true);
+      get_contest_list();
+    }
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+  if (userNameLoaded && contestListLoaded && !futureContestListLoaded) {
+    if (!futureContestListCalled) {
+      setFutureContestListCalled(true);
+      get_future_contest_link();
+    }
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+  if (userNameLoaded && contestListLoaded && futureContestListLoaded) {
     return (
       <View style={styles.container}>
         <StatusBar
@@ -98,21 +205,17 @@ export default class Home extends Component {
           backgroundColor="transparent"
           barStyle="dark-content"
         />
-        <View style={{height: 15}} />
-        <ScrollView 
+        <View style={{ height: 15 }} />
+        <ScrollView
           style={{ backgroundColor: 'transparent' }}
         >
-          {/* <ImageBackground
-          source={require("../../assets/world.jpg")}
-          style={styles.map}
-        > */}
           <View style={styles.col}>
             <View style={{ width: "50%" }}>
               <TouchableOpacity
-                onPress={() => this.props.navigation.toggleDrawer()}
+                onPress={() => navigation.toggleDrawer()}
               >
-                <Icon name="md-remove" color="black" size={26} />
-                <Icon
+                <Ionicons name="md-remove" color="black" size={26} />
+                <Ionicons
                   name="md-remove"
                   color="black"
                   size={26}
@@ -121,17 +224,17 @@ export default class Home extends Component {
               </TouchableOpacity>
             </View>
             <View style={styles.avatarContainer}>
-              <Icon name="send-outline" color="black" size={26} onPress={()=> this.props.navigation.navigate('Messages')} />
+              <Ionicons name="send-outline" color="black" size={26} onPress={() => navigation.navigate('Messages')} />
             </View>
           </View>
-          <Text style={styles.textDash}>Hello, {this.state.userName}</Text>
+          <Text style={styles.textDash}>Hello, {userName}</Text>
 
-          {/* </ImageBackground> */}
           <Deck
-            data={DATA}
-            renderCard={this.renderCard}
-            renderNoMoreCards={this.renderNoMoreCards}
+            data={futureContestList}
+            renderCard={renderCard}
+            renderNoMoreCards={renderNoMoreCards}
           />
+          
           <View>
             <Text
               style={{
@@ -149,9 +252,9 @@ export default class Home extends Component {
               showsHorizontalScrollIndicator={false}
               horizontal
             >
-              <Cards bg="red" idx={0} onPress={()=> this.props.navigation.navigate('Topic')} />
-              <Cards bg="red" idx={1} onPress={()=> this.props.navigation.navigate('Topic')} />
-              <Cards bg="red" idx={2} onPress={()=> this.props.navigation.navigate('Topic')} />
+              <Cards bg="red" idx={0} onPress={() => navigation.navigate('Topic')} />
+              <Cards bg="red" idx={1} onPress={() => navigation.navigate('Topic')} />
+              <Cards bg="red" idx={2} onPress={() => navigation.navigate('Topic')} />
             </ScrollView>
 
             <Text
@@ -170,9 +273,9 @@ export default class Home extends Component {
               showsHorizontalScrollIndicator={false}
               horizontal
             >
-              <Cards bg="red" idx={3} onPress={()=> this.props.navigation.navigate('Topic')} />
-              <Cards bg="red" idx={4} onPress={()=> this.props.navigation.navigate('Topic')} />
-              <Cards bg="red" idx={5} onPress={()=> this.props.navigation.navigate('Topic')} />
+              <Cards bg="red" idx={3} onPress={() => navigation.navigate('Topic')} />
+              <Cards bg="red" idx={4} onPress={() => navigation.navigate('Topic')} />
+              <Cards bg="red" idx={5} onPress={() => navigation.navigate('Topic')} />
             </ScrollView>
           </View>
         </ScrollView>
@@ -180,6 +283,7 @@ export default class Home extends Component {
     );
   }
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -211,7 +315,7 @@ const styles = StyleSheet.create({
   number: {
     color: "#FFF",
     width: 200,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
     marginTop: -10,
   },
@@ -223,6 +327,7 @@ const styles = StyleSheet.create({
     marginLeft: -145,
     fontWeight: "bold",
     marginTop: 20,
+    color: '#FFF'
   },
   noCard: {
     marginBottom: 10,
@@ -286,5 +391,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 50,
+  },
+  activitycontainer: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
   },
 });

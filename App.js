@@ -39,6 +39,7 @@ import FeedScreen from "./components/Navigators/FeedScreenStack";
 import TopicScreen from './components/Articles/Topic'
 import TopicContentScreen from './components/Articles/TopicContent'
 import BadgesScreen from './components/DrawerContents/Badges'
+import ContestScreen from './components/DrawerContents/ContestReminder/ContestReminder'
 
 import CaroselScreen from "./statics/Carosel";
 
@@ -119,11 +120,10 @@ export default class App extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-  
+
     firebase.auth().onAuthStateChanged((user) => {
       this._loadFontsAsync();
-       if(this._isMounted)
-       {
+      if (this._isMounted) {
         if (!user) {
           this.setState({
             loggedIn: false,
@@ -136,21 +136,21 @@ export default class App extends Component {
             loaded: true,
           });
         }
-       }
-        console.log(this.state.loggedIn);
-      
+      }
+      console.log(this.state.loggedIn);
+
     });
   }
   componentWillUnmount() {
     this._isMounted = false;
   }
- 
+
   render() {
-    const { loggedIn, loaded, fontsLoaded , userfind } = this.state;
+    const { loggedIn, loaded, fontsLoaded, userfind } = this.state;
     if (!loaded || !fontsLoaded) {
       return (
         // <LoaderScreen />
-        <View style={{alignItems: 'center', justifyContent: 'center'}} >
+        <View style={{ alignItems: 'center', justifyContent: 'center' }} >
           <Text>Loading....</Text>
         </View>
       );
@@ -198,10 +198,8 @@ export default class App extends Component {
         </NavigationContainer>
       );
     }
-    else if(loggedIn)
-    {
-      if (userfind.emailVerified) 
-      {
+    else if (loggedIn) {
+      if (userfind.emailVerified) {
         return (
           <NavigationContainer>
             <Stack.Navigator initialRouteName="DrawerNavigator">
@@ -270,17 +268,21 @@ export default class App extends Component {
                 component={TopicContentScreen}
                 options={{ headerShown: false }}
               />
-                <Stack.Screen
+              <Stack.Screen
                 name="PickImage"
                 component={PickImageScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Contest"
+                component={ContestScreen}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
           </NavigationContainer>
         );
       }
-      else
-      {
+      else {
         return (
           <NavigationContainer>
             <Stack.Navigator initialRouteName="emailVarify">
@@ -295,6 +297,6 @@ export default class App extends Component {
       }
     }
 
-    
+
   }
 }

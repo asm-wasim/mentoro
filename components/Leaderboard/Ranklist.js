@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, ActivityIndicator, StatusBar, FlatList }
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import firebase from "firebase";
+import { Icon, Feather} from "@expo/vector-icons";
 
 const Calculate_Point = (Point) => {
   Point = Point * (1.0 / 18.0);
@@ -40,6 +41,7 @@ export default function RankList() {
   const [seniorUserData, setSeniorUserData] = useState([]);
   const [juniorUserData, setJuniorUserData] = useState([]);
 
+  const [networkError, setNetworkError] = useState(false);
 
   const create_link = useCallback(() => {
     overall_cf_link = overall_cf_link_demo
@@ -83,11 +85,12 @@ export default function RankList() {
           else { senior_cf_handle.push(documentSnapshot.data().CFHandle) }
         });
         setfirebaseLoaded(true);
-      });
+      })
+      .catch((err) => { console.log(err); setNetworkError(true) });
   })
 
   const get_overall_user_data = useCallback(() => {
-    console.log(overall_cf_link, "AAA")
+    // console.log(overall_cf_link, "AAA")
     fetch(overall_cf_link)
       .then((res) => res.json())
       .then((res) => res.result)
@@ -99,12 +102,12 @@ export default function RankList() {
         setOverallUserData(res);
         // console.log(res);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => { console.log(err); setNetworkError(true) });
     setOverallDataLoaded(true)
   })
 
   const get_senior_user_data = useCallback(() => {
-    console.log(senior_cf_link, "AAA")
+    // console.log(senior_cf_link, "AAA")
     fetch(senior_cf_link)
       .then((res) => res.json())
       .then((res) => res.result)
@@ -116,12 +119,12 @@ export default function RankList() {
         setSeniorUserData(res);
         // console.log(res);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => { console.log(err); setNetworkError(true) });
     setSeniorDataLoaded(true)
   })
 
   const get_junior_user_data = useCallback(() => {
-    console.log(junior_cf_link, "AAA")
+    // console.log(junior_cf_link, "AAA")
     fetch(junior_cf_link)
       .then((res) => res.json())
       .then((res) => res.result)
@@ -133,7 +136,7 @@ export default function RankList() {
         setJuniorUserData(res);
         // console.log(res);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => { console.log(err); setNetworkError(true) });
     setJuniorDataLoaded(true)
   })
 
@@ -312,6 +315,16 @@ export default function RankList() {
     overallUserData.sort((a, b) => (a.rating >= b.rating ? -1 : 1));
     seniorUserData.sort((a, b) => (a.rating >= b.rating ? -1 : 1));
     juniorUserData.sort((a, b) => (a.rating >= b.rating ? -1 : 1));
+  }
+
+  if(networkError){
+    return(
+      <View style={{flex: 1, alignItems : 'center', justifyContent: 'center'}} >
+        <Feather name='alert-octagon' size={50} color='red' />
+        <Text style={{fontFamily: 'gilroy-bold', fontSize: 24, marginTop: 10}} >Oops</Text>
+        <Text style={{fontFamily: 'gilroy-bold'}} >Network Error  :(</Text>
+      </View>
+    )
   }
 
   if (!firebaseLoaded) {
