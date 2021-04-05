@@ -155,7 +155,6 @@ export default function PickImage({ navigation }) {
             </TouchableOpacity>
           </View>
           {image !== null ? (
-
             <View
               style={{
                 marginHorizontal: 10,

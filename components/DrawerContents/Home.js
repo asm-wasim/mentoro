@@ -14,6 +14,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import Deck from "../Deck";
 import Cards from "../Cards";
 
+import firebase from 'firebase'
+
 const DATA = [
   {
     id: 1,
@@ -36,6 +38,28 @@ const DATA = [
 ];
 
 export default class Home extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      userName: "", 
+      userNameLoaded: false 
+    };
+  }
+
+  async componentDidMount(){
+    firebase
+    .firestore()
+    .collection("users")
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((snapshot) => {
+      if (snapshot.exists) {
+        this.setState({userName: snapshot.data().username , userNameLoaded: true});
+      }
+    });
+  }
+
   renderCard(item) {
     return (
       <View key={item.id} style={styles.cardContainer}>
@@ -100,7 +124,7 @@ export default class Home extends Component {
               <Icon name="send-outline" color="black" size={26} onPress={()=> this.props.navigation.navigate('Messages')} />
             </View>
           </View>
-          <Text style={styles.textDash}>Hello, whonayem01</Text>
+          <Text style={styles.textDash}>Hello, {this.state.userName}</Text>
 
           {/* </ImageBackground> */}
           <Deck

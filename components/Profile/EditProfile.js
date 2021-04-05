@@ -51,6 +51,7 @@ export default class EditProfile extends Component {
         CFHandle,
         CCHandle,
       });
+    
   }
 
   render() {

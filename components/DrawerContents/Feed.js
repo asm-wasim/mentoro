@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,19 @@ import {
   Modal,
   TextInput,
   MaskedViewComponent,
+  ActivityIndicator,
+  Alert
 } from "react-native";
 
+import firebase from "firebase";
 import { Ionicons, Feather } from "react-native-vector-icons";
 import moment from "moment";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import FeedPostScreen from "./FeedPost";
+import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "react";
+
+require("firebase/firestore");
+require("firebase/firebase-storage");
 
 let posts = [
   {
@@ -83,20 +90,163 @@ let posts = [
   },
 ];
 
-export default class Feed extends Component {
-  constructor(props) {
-    super(props);
+var allUserPost = [];
+let postNo = 0;
 
-    this.state = {
-      modalOpen: false,
-      text: '',
-    };
-  }
+const getMonthName = monthIndex => {
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  return months[monthIndex];
+};
 
-  renderPost = (post) => {
+const convertTime = (date) => {
+   let time;
+   let AMorPM = "AM";
+   if(date.getHours() > 12) AMorPM = "PM";
+   let hour = (date.getHours()%12).toString();
+   let minute = date.getMinutes().toString();
+   let second = date.getSeconds().toString();
+   if(hour.length === 1) hour = "0"+ hour;
+   if(minute.length === 1) minute = "0"+ minute;
+   if(second.length === 1) second = "0"+ second;
+   time = hour;
+   time += ":"
+   time += minute;
+   time += ":"
+   time += second;
+   time += " ";
+   time += AMorPM;
+   return time;
+}
+
+
+export default function Feed() {
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [text, setText] = useState("");
+  const [image, setImage] = useState(null);
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED);
+
+  const [currentUserPostContent, setCurrentUserPostContent] = useState("");
+  const [currentUserName, setCurrentUserName] = useState("");
+  const [currentUserProfilePhoto, setCurrentUserProfilePhoto] = useState("https://meetanentrepreneur.lu/wp-content/uploads/2019/08/profil-linkedin.jpg");
+  const [userNameLoaded, setUserNameLoaded] = useState(false);
+  const [ProfilePhotoLoaded, setProfilePhotoLoaded] = useState(false);
+  const [allPostLoaded, setAllPostLoaded] = useState(false);
+  const [Called, setCalled] = useState(false);
+
+
+  const get_current_user_name = useCallback(() => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setCurrentUserName(snapshot.data().name);
+          setUserNameLoaded(true);
+        }
+        else{
+          setUserNameLoaded(true);
+          // console.log("Not Exist user name");
+        } 
+      });
+  })
+
+  const get_profile_photo = useCallback(() => {
+    firebase
+      .firestore()
+      .collection("posts")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setCurrentUserProfilePhoto(snapshot.data().downloadURL);
+          setProfilePhotoLoaded(true);
+        }
+        else{ 
+          setProfilePhotoLoaded(true); 
+          // console.log("Not Exist profile photo");
+        }
+      });
+  })
+
+  const get_all_user_posts = useCallback(() => {
+    // console.log("Calling...")
+    setCalled(true);
+    firebase
+      .firestore()
+      .collection("blog")
+      .orderBy("creation", 'desc')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((documentSnapshot) => {
+          //console.log(documentSnapshot.data());
+          allUserPost.push(documentSnapshot.data());
+          allUserPost[postNo].postNo = postNo;
+          postNo++;
+        });
+        //console.log(allUserPost)
+        setAllPostLoaded(true);
+      });
+
+  })
+
+  const post_that_content = useCallback(() => {
+    if (currentUserPostContent.length) {
+      firebase
+        .firestore()
+        .collection("blog")
+        .add({
+          currentUserName,
+          currentUserProfilePhoto,
+          currentUserPostContent,
+          creation: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+    }
+  })
+
+  const show_post_alert = useCallback(()=>{
+    setTimeout(function(){
+      Alert.alert("Posted Successfully!")
+      allUserPost.length = 0;
+      postNo = 0;
+      get_all_user_posts();
+    }, 1000);
+  })
+
+  const action_for_post = useCallback((author)=>{
+    if(author === currentUserName){
+      console.log("Asce")
+      //Do something for deleting and updaing post 
+    }
+  })
+
+  const clearPastContent = useCallback(() => {
+    setCurrentUserPostContent("");
+  })
+
+  const renderPost = (post) => {
+    // console.log(post);
+    let date = new Date(post.creation.seconds*1000);
+    let time = convertTime(date);
+
     return (
       <View style={styles.feedItem}>
-        <Image source={post.avatar} style={styles.avatar} />
+        <Image source={{ uri: post.currentUserProfilePhoto }} style={styles.avatar} />
 
         <View style={{ flex: 1 }}>
           <View
@@ -107,37 +257,72 @@ export default class Feed extends Component {
             }}
           >
             <View>
-              <Text style={styles.name}>{post.name}</Text>
+              <Text style={styles.name}>{post.currentUserName}</Text>
               <Text style={styles.timestamp}>
-                {moment(post.timestamp).fromNow()}
+                {/* {moment(post.creation.seconds).fromNow()} */}
+                {getMonthName(date.getMonth())} {date.getDate()}, {date.getFullYear()}  {time}
               </Text>
             </View>
 
-            <Feather name="more-horizontal" size={24} color="#73788B" />
+            <Feather name="more-horizontal" size={24} color="#73788B" onPress={()=> action_for_post(post.currentUserName) } />
           </View>
 
-          <Text style={styles.posts}>{post.text}</Text>
+          <Text style={styles.posts}>{post.currentUserPostContent}</Text>
 
-          <Image
+          {/* <Image
             source={post.image}
             style={styles.postImage}
             resizeMode="cover"
-          />
+          /> */}
 
-          <View style={{ flexDirection: "row" }}>
+          {/* <View style={{ flexDirection: "row" }}>
             <Feather
               name="heart"
               size={24}
               color="#73788B"
               style={{ marginRight: 16 }}
             />
-          </View>
+          </View> */}
         </View>
       </View>
     );
   };
 
-  render() {
+  if (!userNameLoaded) {
+    get_current_user_name();
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+  
+  if (userNameLoaded && !ProfilePhotoLoaded) {
+    get_profile_photo();
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+
+  if (userNameLoaded && ProfilePhotoLoaded && !Called && !allPostLoaded) {
+    get_all_user_posts();
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+  if (userNameLoaded && ProfilePhotoLoaded && Called && !allPostLoaded) {
+    return (
+      <View style={[styles.activitycontainer, styles.horizontal]}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+
+  if (userNameLoaded && ProfilePhotoLoaded && Called && allPostLoaded) {
     return (
       <View style={styles.container}>
         <StatusBar
@@ -146,18 +331,18 @@ export default class Feed extends Component {
           barStyle="dark-content"
         />
 
-        <Modal visible={this.state.modalOpen}>
+        <Modal visible={modalOpen}>
           <View style={styles.Modalcontainer}>
             <View style={styles.Modalheader}>
               <Feather
                 name="arrow-left"
                 size={24}
                 color="black"
-                onPress={() => this.setState({ ...this, modalOpen: false })}
+                onPress={() => setModalOpen(false)}
               />
               <Text
                 style={{ fontFamily: "poppins-medium" }}
-                onPress={() => this.setState({ ...this, modalOpen: false })}
+                onPress={() => { setModalOpen(false); post_that_content(); show_post_alert(); }}
               >
                 Post
               </Text>
@@ -165,7 +350,7 @@ export default class Feed extends Component {
 
             <View style={styles.ModalinputContainer}>
               <Image
-                source={require("../../assets/Person/nayem.jpg")}
+                source={{ uri: currentUserProfilePhoto }}
                 style={styles.Modalavatar}
               />
               <TextInput
@@ -179,20 +364,38 @@ export default class Feed extends Component {
                   padding: 10,
                   borderRadius: 8,
                 }}
-                onChangeText={(text) => this.setState({ text })}
-                value={this.state.text}
+                onChangeText={(text) => setCurrentUserPostContent(text)}
+                value={currentUserPostContent}
               />
+            </View>
+            <View style={{ height: 45, marginHorizontal: 40, }}>
+              <View style={{ flex: 1, flexDirection: "row", }}>
+                <TouchableOpacity style={{ flex: 3, alignItems: "center", justifyContent: "center", borderWidth: 0.5, borderColor: "grey", height: 50, borderRadius: 12, backgroundColor: "F1F7FF", width: 265 }}>
+                  <Text style={{ fontFamily: "gilroy-medium", fontSize: 16, opacity: 0.4 }}>Choose a file</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={{ flex: 1, alignItems: "center", justifyContent: "center", height: 50, borderRadius: 12, marginLeft: 5, backgroundColor: "#2397D7", width: 70 }} >
+                  <Text style={{ fontFamily: "gilroy-medium", fontSize: 16, color: "white", }}>Save</Text>
+                </TouchableOpacity>
+              </View>
+              {image !== null ? (
+
+                <View style={{ marginHorizontal: 10, marginTop: 10, flexDirection: "row", }}>
+                  <Feather name="check-circle" size={16} color="green" />
+                  <Text style={{ marginLeft: 10, fontFamily: "gilroy-medium", fontSize: 15, }}>File selected!</Text>
+                </View>
+              ) : null}
             </View>
           </View>
         </Modal>
+
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Feed</Text>
         </View>
 
-        <TouchableOpacity style={styles.ModalShowcontainer} onPress={() => this.setState({ ...this, modalOpen: true })} >
+        <TouchableOpacity style={styles.ModalShowcontainer} onPress={() => { clearPastContent(), setModalOpen(true) }} >
           <View style={styles.ModalinputContainer}>
             <Image
-              source={require("../../assets/Person/nayem.jpg")}
+              source={{ uri: currentUserProfilePhoto }}
               style={styles.Modalavatar}
             />
             <View
@@ -203,17 +406,17 @@ export default class Feed extends Component {
                 borderRadius: 8,
               }}
             >
-              <Text style={{color: 'grey', fontFamily: 'poppins-regular'}} >Anything on mind to share?</Text>
+              <Text style={{ color: 'grey', fontFamily: 'poppins-regular' }} >Anything on mind to share?</Text>
             </View>
           </View>
         </TouchableOpacity>
 
         <FlatList
           style={styles.feed}
-          data={posts}
-          renderItem={({ item }) => this.renderPost(item)}
-          keyExtractor={(item) => item.id}
+          data={allUserPost}
+          renderItem={({ item }) => renderPost(item)}
           showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.postNo.toString()}
         />
       </View>
     );
@@ -302,4 +505,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 16,
   },
+  activitycontainer: {
+    flex: 1,
+    justifyContent: "center"
+  },
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10
+  }
 });

@@ -50,19 +50,19 @@ export default function RankList() {
       if (i > 0) overall_cf_link = overall_cf_link.concat(";");
       overall_cf_link = overall_cf_link.concat(overall_cf_handle[i]);
     }
-    console.log(overall_cf_link, "Link Created Overall")
+    // console.log(overall_cf_link, "Link Created Overall")
 
     for (let i = 0; i < senior_cf_handle.length; i++) {
       if (i > 0) senior_cf_link = senior_cf_link.concat(";");
       senior_cf_link = senior_cf_link.concat(senior_cf_handle[i]);
     }
-    console.log(senior_cf_link, "Link Created Senior");
+    // console.log(senior_cf_link, "Link Created Senior");
 
     for (let i = 0; i < junior_cf_handle.length; i++) {
       if (i > 0) junior_cf_link = junior_cf_link.concat(";");
       junior_cf_link = junior_cf_link.concat(junior_cf_handle[i]);
     }
-    console.log(junior_cf_link, "Link Created Junior");
+    // console.log(junior_cf_link, "Link Created Junior");
     setLinkCreated(true)
   })
 
@@ -77,7 +77,7 @@ export default function RankList() {
           let Year = documentSnapshot.data().year;
           let a = Year.localeCompare(One) == 0;
           let b = Year.localeCompare(Two) == 0; 
-          console.log(Year,a,b, documentSnapshot.data().CFHandle );
+          // console.log(Year,a,b, documentSnapshot.data().CFHandle );
           if (a) { junior_cf_handle.push(documentSnapshot.data().CFHandle) }
           else if (b) { junior_cf_handle.push(documentSnapshot.data().CFHandle) }
           else { senior_cf_handle.push(documentSnapshot.data().CFHandle) }
@@ -92,10 +92,10 @@ export default function RankList() {
       .then((res) => res.json())
       .then((res) => res.result)
       .then((res) => {
-        if (typeof res === undefined) console.log("undefined overall")
-        else {
-          console.log("done overall")
-        }
+        // if (typeof res === undefined) console.log("undefined overall")
+        // else {
+        //   console.log("done overall")
+        // }
         setOverallUserData(res);
         // console.log(res);
       })
@@ -109,10 +109,10 @@ export default function RankList() {
       .then((res) => res.json())
       .then((res) => res.result)
       .then((res) => {
-        if (typeof res === undefined) console.log("undefined senior")
-        else {
-          console.log("done senior")
-        }
+        // if (typeof res === undefined) console.log("undefined senior")
+        // else {
+        //   console.log("done senior")
+        // }
         setSeniorUserData(res);
         // console.log(res);
       })
@@ -126,10 +126,10 @@ export default function RankList() {
       .then((res) => res.json())
       .then((res) => res.result)
       .then((res) => {
-        if (typeof res === undefined) console.log("undefined junior")
-        else {
-          console.log("done junior")
-        }
+        // if (typeof res === undefined) console.log("undefined junior")
+        // else {
+        //   console.log("done junior")
+        // }
         setJuniorUserData(res);
         // console.log(res);
       })
@@ -385,6 +385,7 @@ export default function RankList() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 15,
+                marginTop: 5,
               }}
               onPress={() => setCurrentTab(1)}
             >
@@ -411,6 +412,7 @@ export default function RankList() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 15,
+                margin: 5,
               }}
               onPress={() => setCurrentTab(3)}
             >
@@ -438,7 +440,7 @@ export default function RankList() {
             barStyle='dark-content'
           />
 
-          <View style={{ marginTop: 10, alignItems: "center" }}>
+          <View style={{ alignItems: "center" }}>
             <Text style={{ fontSize: 18, color: 'black' }}>
               Leaderboard
           </Text>
@@ -454,6 +456,7 @@ export default function RankList() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 15,
+                marginTop: 5,
               }}
               onPress={() => setCurrentTab(1)}
             >
@@ -480,6 +483,7 @@ export default function RankList() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 15,
+                marginTop: 5,
               }}
               onPress={() => setCurrentTab(3)}
             >
@@ -524,6 +528,7 @@ export default function RankList() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 15,
+                marginTop: 5,
               }}
               onPress={() => setCurrentTab(1)}
             >
@@ -550,6 +555,7 @@ export default function RankList() {
                 justifyContent: "center",
                 alignItems: "center",
                 borderRadius: 15,
+                marginTop: 5,
               }}
               onPress={() => setCurrentTab(3)}
             >
