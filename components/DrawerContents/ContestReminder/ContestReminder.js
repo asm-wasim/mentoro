@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
     width: 150,
     fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 20,
   },
   number: {
     color: "#FFF",
@@ -247,7 +248,6 @@ const styles = StyleSheet.create({
     marginLeft: -145,
     fontWeight: "bold",
     marginTop: 20,
-    color: '#FFF'
   },
   noCard: {
     marginBottom: 10,

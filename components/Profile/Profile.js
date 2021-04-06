@@ -21,87 +21,71 @@ import { Ionicons, Icon, Feather } from "@expo/vector-icons";
 // import BadgesData from '../../statics/BadgesData'
 import Donut from "./Donut";
 
-let posts = [
-  {
-    id: "1",
-    name: "Abdullah Al Nayem",
-    text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-    timestamp: 1569109273726,
-    avatar: require("../../assets/Person/nayem.jpg"),
-    image: require("../../assets/Person/nayem.jpg"),
-  },
-  {
-    id: "2",
-    name: "Abdullah Al Nayem",
-    text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-    timestamp: 1569109273726,
-    avatar: require("../../assets/Person/nayem.jpg"),
-    image: require("../../assets/Person/nayem.jpg"),
-  },
-  {
-    id: "3",
-    name: "Abdullah Al Nayem",
-    text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-    timestamp: 1569109273726,
-    avatar: require("../../assets/Person/nayem.jpg"),
-    image: require("../../assets/Person/nayem.jpg"),
-  },
-  {
-    id: "4",
-    name: "Abdullah Al Nayem",
-    text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
-    timestamp: 1569109273726,
-    avatar: require("../../assets/Person/nayem.jpg"),
-    image: require("../../assets/Person/nayem.jpg"),
-  }
-];
-
 let BadgesData = [
   {
     id: "1",
     title: "1500+",
     description: 'Solved 1500 problems!',
-    icon: require('../../assets/Person/nayem.jpg'),
+    icon: require('../../assets/badges/1500.jpg'),
     status: "false",
   },
   {
     id: "2",
     title: "1000+",
     description: 'Solved 1000 problems!',
-    icon: require("../../assets/Person/hridoy.jpg"),
+    icon: require("../../assets/badges/1000.jpg"),
     status: "false",
   },
   {
     id: "3",
     title: "800+",
     description: 'Solved 800 problems!',
-    icon: require("../../assets/Person/wasim.jpg"),
+    icon: require("../../assets/badges/800.jpg"),
     status: "false",
   },
   {
     id: "4",
     title: "500+",
     description: 'Solved 500 problems!',
-    icon: require("../../assets/Person/mujammal.jpg"),
+    icon: require("../../assets/badges/500.jpg"),
     status: "false",
   },
   {
     id: "5",
     title: "250+",
     description: 'Solved 250 problems!',
-    icon: require("../../assets/Person/mujammal.jpg"),
+    icon: require("../../assets/badges/250.png"),
     status: "false",
   },
   {
     id: "6",
     title: "100+",
     description: 'Solved 100 problems!',
-    icon: require("../../assets/Person/mujammal.jpg"),
+    icon: require("../../assets/badges/100.png"),
     status: "false",
+  },
+];
+
+let ClassMates = [
+  {
+    id: "1",
+    title: "Abdullah Al Nayem",
+    icon: require('../../assets/Person/nayem.jpg'),
+  },
+  {
+    id: "2",
+    title: "Md Jahirul Islam Hridoy",
+    icon: require("../../assets/Person/hridoy.jpg"),
+  },
+  {
+    id: "3",
+    title: "Abir Sadat Wasim",
+    icon: require("../../assets/Person/wasim.jpg"),
+  },
+  {
+    id: "4",
+    title: "Mujammal Ahmed",
+    icon: require("../../assets/Person/mujammal.jpg"),
   },
 ];
 
@@ -313,23 +297,22 @@ export default function Profile({ navigation }) {
       .catch((err) => { console.log(err); setNetworkError(true) });
   })
 
-  const make_badges_list = useCallback(()=>{
+  const make_badges_list = useCallback(() => {
     const ac = getProblems(submissions);
-    if(ac.length >= 100)  { BadgesData[5].status = "true"; }
-    if(ac.length >= 250)  { BadgesData[4].status = "true"; }
-    if(ac.length >= 500)  { BadgesData[3].status = "true"; }
-    if(ac.length >= 800)  { BadgesData[2].status = "true"; }
-    if(ac.length >= 1000) { BadgesData[1].status = "true"; }
-    if(ac.length >= 1500) { BadgesData[0].status = "true"; }
-    
+    if (ac.length >= 100) { BadgesData[5].status = "true"; }
+    if (ac.length >= 250) { BadgesData[4].status = "true"; }
+    if (ac.length >= 500) { BadgesData[3].status = "true"; }
+    if (ac.length >= 800) { BadgesData[2].status = "true"; }
+    if (ac.length >= 1000) { BadgesData[1].status = "true"; }
+    if (ac.length >= 1500) { BadgesData[0].status = "true"; }
+
     let i = 0;
-    for( i = 0; i < 6; i++){
-      if(BadgesData[i].status === "true" && finalBadges.length < 4){
+    for (i = 0; i < 6; i++) {
+      if (BadgesData[i].status === "true" && finalBadges.length < 4) {
         finalBadges.push(BadgesData[i]);
-        console.log(i);
       }
     }
-    if(i === 6) setBadgesLoaded(true);
+    if (i === 6) setBadgesLoaded(true);
   })
 
   if (networkError) {
@@ -411,7 +394,7 @@ export default function Profile({ navigation }) {
     );
   }
 
-  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded && badgesLoaded &&  !ownerPostLoaded) {
+  if (firebaseLoaded1 && firebaseLoaded2 && cfUserStatusLoaded && cfPointLoaded && recentActivityLoaded && badgesLoaded && !ownerPostLoaded) {
     if (!ownerPostCalled) {
       setOwnerPostCalled(true);
       get_owner_post();
@@ -433,6 +416,15 @@ export default function Profile({ navigation }) {
           </View>
         );
       }
+    };
+    const renderMates = (post) => {
+      return (
+        <View style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent', marginLeft: 15 }} >
+          <Image source={post.icon} style={{ height: 45, width: 45, borderRadius: 100 }} />
+          {/* <Text style={{ fontFamily: 'gilroy-bold', fontSize: 14 }} >{post.title}</Text> */}
+        </View>
+      );
+
     };
 
     const renderBlog = (post) => {
@@ -607,12 +599,12 @@ export default function Profile({ navigation }) {
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 100, marginHorizontal: 20, marginTop: 10, backgroundColor: 'white', marginBottom: 20, borderRadius: 30 }} >
             <FlatList
               horizontal={true}
-              data={BadgesData}
-              renderItem={({ item }) => renderPost(item)}
+              data={ClassMates}
+              renderItem={({ item }) => renderMates(item)}
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
             />
-            <TouchableOpacity style={{ backgroundColor: 'orange', marginRight: 10, height: 40, width: 90, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.navigate('Badges')} >
+            <TouchableOpacity style={{ backgroundColor: 'orange', marginRight: 10, height: 40, width: 90, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }} onPress={() => navigation.navigate('Classmates')} >
               <Text style={{ fontFamily: 'gilroy-bold', color: 'white' }} >View all</Text>
             </TouchableOpacity>
           </View>

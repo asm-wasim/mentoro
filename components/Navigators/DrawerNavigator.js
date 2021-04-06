@@ -9,6 +9,7 @@ import FeedScreenStack from "./FeedScreenStack";
 import ContestReminderScreen from "../DrawerContents/ContestReminder/ContestReminder";
 import NotificationScreen from "../DrawerContents/Notification";
 import AboutUsScreen from "../DrawerContents/AboutUs";
+import ClassmatesScreen from "../DrawerContents/ClassMates";
 
 import DrawerContentScreen from "./DrawerContent";
 
@@ -45,6 +46,11 @@ export default DrawerNavigator = () => {
       <Drawer.Screen
         name="AboutUs"
         component={AboutUsScreen}
+        options={{ headerShown: false }}
+      />
+      <Drawer.Screen
+        name="Classmates"
+        component={ClassmatesScreen}
         options={{ headerShown: false }}
       />
     </Drawer.Navigator>

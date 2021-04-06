@@ -19,12 +19,12 @@ export default class TopicContent extends Component {
                 <StatusBar animated={true} backgroundColor="transparent" barStyle="dark-content" />
                 <View style={{ flex: 0.1, marginHorizontal: 20, marginBottom: 30}}>
                     <Ionicons name="chevron-back" size={24} color='black' onPress={()=> this.props.navigation.goBack()} />
-                    <Text style={{ position: "absolute", alignSelf: "center", fontFamily: "gilroy-bold", fontSize: 18, }}>Science with Craft</Text>
+                    <Text style={{ position: "absolute", alignSelf: "center", fontFamily: "gilroy-bold", fontSize: 18, }}>Competitive Programming</Text>
                 </View>
                 <View style={{flex: 0.1, marginHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between'}} >
                     <View>
                         <Text style={{fontFamily: 'gilroy-regular', fontSize: 14}} >Chapter 1</Text>
-                        <Text style={{fontFamily: 'gilroy-bold', fontSize: 20}} >Carbon and its Compounds</Text>
+                        <Text style={{fontFamily: 'gilroy-bold', fontSize: 16}} >Introduction to Competitive Programming</Text>
                     </View>
                     {
                         this.state.bookmarked === true ? 

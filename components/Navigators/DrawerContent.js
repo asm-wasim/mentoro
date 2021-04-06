@@ -140,6 +140,13 @@ export default function DrawerContent(props) {
                 label="Blog"
                 onPress={() => { props.navigation.navigate('Feed') }}
               />
+              <Drawer.Item
+                icon={({ color, size }) => (
+                  <Ionicons name="infinite-outline" color={color} size={size} />
+                )}
+                label="Classmates"
+                onPress={() => { props.navigation.navigate('Classmates') }}
+              />
             </Drawer.Section>
             <Drawer.Section style={styles.bottomDrawerSection2}>
               <Drawer.Item

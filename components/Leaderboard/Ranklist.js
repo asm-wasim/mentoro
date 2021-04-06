@@ -392,7 +392,7 @@ export default function RankList() {
           >
             <TouchableOpacity
               style={{
-                backgroundColor: currentTab == 1 ? "#EB996E" : "transparent",
+                backgroundColor: currentTab == 1 ? "skyblue" : "transparent",
                 height: 30,
                 width: 115,
                 justifyContent: "center",
@@ -535,7 +535,7 @@ export default function RankList() {
           >
             <TouchableOpacity
               style={{
-                backgroundColor: currentTab == 1 ? "#EB996E" : "transparent",
+                backgroundColor: currentTab == 1 ? "skyblue" : "transparent",
                 height: 30,
                 width: 115,
                 justifyContent: "center",
@@ -562,7 +562,7 @@ export default function RankList() {
             </TouchableOpacity>
             <TouchableOpacity
               style={{
-                backgroundColor: currentTab == 3 ? "#EB996E" : "transparent",
+                backgroundColor: currentTab == 3 ? "skyblue" : "transparent",
                 height: 30,
                 width: 115,
                 justifyContent: "center",

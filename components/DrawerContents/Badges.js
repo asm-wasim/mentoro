@@ -35,42 +35,42 @@ let BadgesData = [
     id: "1",
     title: "1500+",
     description: 'Solved 1500 problems!',
-    icon: require('../../assets/Person/nayem.jpg'),
+    icon: require('../../assets/badges/1500.jpg'),
     status: "false",
   },
   {
     id: "2",
     title: "1000+",
     description: 'Solved 1000 problems!',
-    icon: require("../../assets/Person/hridoy.jpg"),
+    icon: require("../../assets/badges/1000.jpg"),
     status: "false",
   },
   {
     id: "3",
     title: "800+",
     description: 'Solved 800 problems!',
-    icon: require("../../assets/Person/wasim.jpg"),
+    icon: require("../../assets/badges/800.jpg"),
     status: "false",
   },
   {
     id: "4",
     title: "500+",
     description: 'Solved 500 problems!',
-    icon: require("../../assets/Person/mujammal.jpg"),
+    icon: require("../../assets/badges/500.jpg"),
     status: "false",
   },
   {
     id: "5",
     title: "250+",
     description: 'Solved 250 problems!',
-    icon: require("../../assets/Person/mujammal.jpg"),
+    icon: require("../../assets/badges/250.png"),
     status: "false",
   },
   {
     id: "6",
     title: "100+",
     description: 'Solved 100 problems!',
-    icon: require("../../assets/Person/mujammal.jpg"),
+    icon: require("../../assets/badges/100.png"),
     status: "false",
   },
 ];
@@ -149,7 +149,7 @@ export default function Badges({navigation}) {
   const renderEarnedBadges = (post) => {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 20 }} >
-        <Image source={post.icon} style={{ height: 100, width: 100, borderRadius: 100 }} />
+        <Image source={post.icon} style={{ height: 100, width: 100, borderRadius: 100, marginTop: 10 }} />
         <Text style={{ fontFamily: 'gilroy-bold', fontSize: 15 }} >{post.title}</Text>
         <Text style={{ fontFamily: 'gilroy-medium', fontSize: 12, opacity: 0.4 }} >{post.description}</Text>
       </View>

@@ -327,7 +327,6 @@ const styles = StyleSheet.create({
     marginLeft: -145,
     fontWeight: "bold",
     marginTop: 20,
-    color: '#FFF'
   },
   noCard: {
     marginBottom: 10,
